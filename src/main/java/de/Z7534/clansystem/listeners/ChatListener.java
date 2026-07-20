@@ -7,7 +7,6 @@ import de.Z7534.clansystem.models.ClanMember;
 import de.Z7534.clansystem.utils.ColorUtils;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +28,7 @@ public class ChatListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -62,17 +61,14 @@ public class ChatListener implements Listener {
         }
 
         Clan clan = plugin.getClanManager().getClanByPlayer(player);
-        if (clan != null && !clan.getSuffix().isEmpty()) {
-            Component suffix = ColorUtils.colorize(" " + clan.getColoredSuffix());
+        String suffix = (clan != null && !clan.getSuffix().isEmpty()) ? " " + clan.getColoredSuffix() : "";
 
-            event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message) ->
-                    Component.text()
-                            .append(sourceDisplayName)
-                            .append(suffix)
-                            .append(Component.text(": "))
-                            .append(message)
-                            .build()));
-        }
+        event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message) -> {
+            String plainMessage = PlainTextComponentSerializer.plainText().serialize(message);
+            String formatted = plugin.getMessageManager().getRawWithPlaceholders("chat.global-format",
+                    MessageManager.of("player", player.getName(), "suffix", suffix, "message", plainMessage));
+            return ColorUtils.colorize(formatted);
+        }));
     }
 
     public void sendClanChat(Player player, Clan clan, String message) {
@@ -83,18 +79,16 @@ public class ChatListener implements Listener {
         String formatted = plugin.getMessageManager().getRawWithPlaceholders("chat.format",
                 MessageManager.of("rank", rankName, "suffix", suffix, "player", player.getName(), "message", message));
 
-        clan.broadcastMessage(plugin.getMessageManager().getPrefix() + formatted);
+        clan.broadcastMessage(formatted);
     }
 
     public void sendAllyChat(Player player, Clan clan, String message) {
         String formatted = plugin.getMessageManager().getRawWithPlaceholders("chat.ally-format",
                 MessageManager.of("clan", clan.getColoredName(), "player", player.getName(), "message", message));
 
-        String fullMessage = plugin.getMessageManager().getPrefix() + formatted;
-
-        clan.broadcastMessage(fullMessage);
+        clan.broadcastMessage(formatted);
         for (Clan ally : plugin.getAllianceManager().getAllies(clan)) {
-            ally.broadcastMessage(fullMessage);
+            ally.broadcastMessage(formatted);
         }
     }
 

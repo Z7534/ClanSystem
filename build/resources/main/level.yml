@@ -23,47 +23,47 @@ base-values:
   max-members: 15
   max-homes: 1
   max-warps: 3
-  chest-rows: 3  # 1 Reihe = 9 Slots
-  icon: COAL_BLOCK   # Icon 1/5 - von Anfang an verfügbar
+  chest-rows: 3  # 3 Reihen
+  icon: COAL_BLOCK
 
 # Level-Definitionen
 levels:
   1:
     points-required: 0
     rewards:
-      max-members: 0      # +0 (bleibt bei 10)
-      max-warps: 0        # +0 (bleibt bei 1)
-      chest-rows: 0       # +0 (bleibt bei 1)
+      max-members: 0      # +0 (bleibt bei 15)
+      max-warps: 0        # +0 (bleibt bei 3)
+      chest-rows: 0       # +0 (bleibt bei 3)
 
   2:
     points-required: 100
     rewards:
       max-members: 5      # +5 (jetzt 15)
-      max-warps: 2        # +1 (jetzt 2)
-      chest-rows: 1       # +1 (jetzt 2 Reihen = 18 Slots)
+      max-warps: 2        # +1 (jetzt 5)
+      chest-rows: 1       # +1 (jetzt 4 Reihen)
       icon: COPPER_BLOCK
 
   3:
     points-required: 600
     rewards:
       max-members: 5      # +5 (jetzt 20)
-      max-warps: 2        # +1 (jetzt 3)
-      chest-rows: 1       # +1 (jetzt 3 Reihen = 27 Slots)
-      icon: IRON_BLOCK       # Icon 4/5
+      max-warps: 2        # +1 (jetzt 7)
+      chest-rows: 1       # +1 (jetzt 5 Reihen)
+      icon: IRON_BLOCK
 
   4:
     points-required: 1000
     rewards:
       max-members: 5      # +5 (jetzt 25)
-      max-warps: 1        # +2 (jetzt 5)
-      chest-rows: 1       # +1 (jetzt 4 Reihen = 36 Slots)
-      icon: GOLD_BLOCK  # Icon 5/5
+      max-warps: 1        # +2 (jetzt 9)
+      chest-rows: 1       # +1 (jetzt 6 Reihen)
+      icon: GOLD_BLOCK
 
   5:
     points-required: 1500
     rewards:
-      max-members: 5     # +10 (jetzt 35)
-      max-warps: 1        # +3 (jetzt 8)
+      max-members: 5     # +5 (jetzt 30)
+      max-warps: 1        # +1 (jetzt 10)
       icon: EMERALD_BLOCK
 
   6:

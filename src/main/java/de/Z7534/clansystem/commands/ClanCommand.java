@@ -1492,7 +1492,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
             String formattedMessage = plugin.getMessageManager().getRawWithPlaceholders("chat.format",
                     MessageManager.of("rank", rankName, "suffix", suffix, "player", player.getName(), "message", message.toString()));
 
-            clan.broadcastMessage(plugin.getMessageManager().getPrefix() + formattedMessage);
+            clan.broadcastMessage(formattedMessage);
         } else {
 
             de.Z7534.clansystem.listeners.ChatListener.toggleClanChat(player);

@@ -14,6 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatabaseManager {
 
@@ -21,6 +26,7 @@ public class DatabaseManager {
     private HikariDataSource dataSource;
     private String tablePrefix;
     private SqlDialect dialect;
+    private ExecutorService dbExecutor;
 
     public DatabaseManager(Clansystem plugin) {
         this.plugin = plugin;
@@ -39,6 +45,7 @@ public class DatabaseManager {
             HikariConfig hikariConfig = new HikariConfig();
             dialect.configureDataSource(hikariConfig, config, plugin.getDataFolder());
             dataSource = new HikariDataSource(hikariConfig);
+            dbExecutor = createExecutor();
 
             try (Connection conn = dataSource.getConnection()) {
                 dialect.afterConnect(conn);
@@ -54,6 +61,16 @@ public class DatabaseManager {
         }
     }
 
+    private ExecutorService createExecutor() {
+        AtomicInteger counter = new AtomicInteger(1);
+        ThreadFactory threadFactory = runnable -> {
+            Thread thread = new Thread(runnable, "Clansystem-DB-" + counter.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        };
+        return Executors.newCachedThreadPool(threadFactory);
+    }
+
     private SqlDialect createDialect(StorageType storageType) {
         if (storageType == StorageType.MARIADB) {
             return new MariaDbDialect();
@@ -62,6 +79,17 @@ public class DatabaseManager {
     }
 
     public void disconnect() {
+        if (dbExecutor != null && !dbExecutor.isShutdown()) {
+            dbExecutor.shutdown();
+            try {
+                if (!dbExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    dbExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                dbExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
             plugin.getLogger().info("Datenbankverbindung geschlossen.");
@@ -276,7 +304,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             return -1;
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> updateClan(Clan clan) {
@@ -305,7 +333,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Aktualisieren des Clans: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> deleteClan(int clanId) {
@@ -322,7 +350,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen des Clans: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public List<Clan> loadAllClans() {
@@ -527,7 +555,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             return -1;
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> updateRank(ClanRank rank) {
@@ -548,7 +576,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Aktualisieren des Rangs: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> deleteRank(int rankId) {
@@ -565,7 +593,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen des Rangs: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> addMember(ClanMember member) {
@@ -586,7 +614,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Hinzufügen des Mitglieds: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> updateMember(ClanMember member) {
@@ -605,7 +633,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Aktualisieren des Mitglieds: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> removeMember(UUID uuid) {
@@ -622,7 +650,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Entfernen des Mitglieds: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Integer> saveHome(ClanHome home) {
@@ -656,7 +684,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             return home.getId();
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> deleteHome(int clanId, String name) {
@@ -674,7 +702,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen des Homes: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Integer> saveWarp(ClanWarp warp) {
@@ -709,7 +737,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             return warp.getId();
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> deleteWarp(int clanId, String name) {
@@ -727,7 +755,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen des Warps: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> saveChest(int clanId, ItemStack[] contents) {
@@ -749,7 +777,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Speichern der Truhe: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> logChestAction(int clanId, UUID playerUuid, String action, ItemStack item) {
@@ -771,7 +799,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Loggen der Chest-Aktion: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> createAlliance(int clanIdA, int clanIdB) {
@@ -795,7 +823,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Erstellen der Allianz: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> deleteAlliance(int clanIdA, int clanIdB) {
@@ -816,7 +844,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen der Allianz: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Integer> createWar(ClanWar war) {
@@ -843,7 +871,7 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
             return -1;
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> updateWar(ClanWar war) {
@@ -870,7 +898,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Aktualisieren des Krieges: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public CompletableFuture<Void> addWarKill(int warId, UUID killerUuid, UUID victimUuid, int killerClanId, int points) {
@@ -893,7 +921,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Hinzufügen des War-Kills: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public List<ClanWar> loadActiveWars() {
@@ -977,7 +1005,7 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Setzen des Cooldowns: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 
     public long getCooldown(UUID uuid, String type) {
@@ -1016,6 +1044,6 @@ public class DatabaseManager {
                 plugin.getLogger().severe("Fehler beim Löschen abgelaufener Cooldowns: " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }, dbExecutor);
     }
 }

@@ -181,10 +181,14 @@ level:
 
 # Chat-Nachrichten
 chat:
+  # Format fuer den NORMALEN (globalen) Chat - nicht der Clan-/Allianz-Chat!
+  # Platzhalter: %player%, %suffix% (Clan-Tag, leer falls kein Clan/kein Suffix gesetzt), %message%
+  # Leer lassen bzw. anpassen, wenn du gar keinen Suffix im normalen Chat willst.
+  global-format: "%player% &8>>&r %message%"
   toggled-on: "&aKlan-Chat aktiviert!"
   toggled-off: "&7Klan-Chat deaktiviert."
-  format: "&8[&aClan&8] &7[%rank%] %player% &8>> &f%message%"
-  ally-format: "&8[&bAllianz&8] &7[%suffix%&r] %player% &8>> &f%message%"
+  format: "&8[&aClan&8] &7[%rank%]&r %player% &8>> &f%message%"
+  ally-format: "&8[&bAllianz&8] &7[%suffix%]&r %player% &8>> &f%message%"
   ally-toggled-on: "&aAllianz-Chat aktiviert!"
   ally-toggled-off: "&7Allianz-Chat deaktiviert."
   mode-switched: "&7Chat-Kanal gewechselt zu: &e%mode%"

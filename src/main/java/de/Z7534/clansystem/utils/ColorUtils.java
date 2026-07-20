@@ -10,6 +10,7 @@ public class ColorUtils {
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
     private static final Pattern COLOR_CODE_PATTERN = Pattern.compile("&([0-9a-fk-or])");
+    private static final Pattern SECTION_COLOR_CODE_PATTERN = Pattern.compile("\u00A7[0-9a-fk-or]");
 
     public static Component colorize(String message) {
         if (message == null || message.isEmpty()) {
@@ -64,7 +65,7 @@ public class ColorUtils {
         message = HEX_PATTERN.matcher(message).replaceAll("");
 
         message = COLOR_CODE_PATTERN.matcher(message).replaceAll("");
-        message = message.replaceAll("\u00A7[0-9a-fk-or]", "");
+        message = SECTION_COLOR_CODE_PATTERN.matcher(message).replaceAll("");
 
         return message;
     }
