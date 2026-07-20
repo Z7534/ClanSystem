@@ -1,219 +1,263 @@
-# 🏰 Clansystem
+# Clansystem
 
-Ein vollständiges Clan-Plugin mit Rängen, Homes, Warps, Truhen, Allianzen, Kriegen und einem Glow-Effekt fürs eigene Team.
+Ein umfangreiches Clan-Plugin für **Paper 1.21.10** mit Rängen, Homes, Warps, Allianzen, Kriegen, Clan-Truhen, Levelsystem, PvP-Punkten, Glow-Effekt und PlaceholderAPI-Unterstützung.
+
+- **Autor:** Z7534
+- **API-Version:** 1.21
+- **Softdepends:** PlaceholderAPI, LuckPerms, ProtocolLib (alle optional)
+- **Datenbank:** SQLite (lokale `.db`-Datei) **oder** MariaDB
 
 ---
 
-## 📖 Grundprinzip
+## Inhaltsverzeichnis
 
-Es gibt **zwei getrennte Berechtigungs-Systeme**, die man nicht verwechseln sollte:
+1. [Abhängigkeiten (Softdepends)](#abhängigkeiten-softdepends)
+2. [Datenbank-Konfiguration](#datenbank-konfiguration)
+3. [Befehle](#befehle)
+   - [/clan](#clan-hauptbefehl)
+   - [/clanadmin](#clanadmin-admin-befehl)
+4. [Permissions](#permissions)
+5. [Interne Rang-Berechtigungen](#interne-rang-berechtigungen)
+6. [PlaceholderAPI-Platzhalter](#placeholderapi-platzhalter)
+7. [Konfigurationsdateien](#konfigurationsdateien)
+   - [config.yml](#configyml)
+   - [level.yml](#levelyml)
+   - [messages.yml](#messagesyml)
+8. [Features im Detail](#features-im-detail)
 
-| | LuckPerms / Bukkit (`clansystem.*`) | Clan-interne Rang-Rechte |
+---
+
+## Abhängigkeiten (Softdepends)
+
+Alle drei sind **optional** – das Plugin läuft auch ohne sie, einzelne Features fallen dann jedoch weg:
+
+| Plugin | Zweck | Ohne dieses Plugin |
 |---|---|---|
-| **Was regelt es?** | Ob ein Spieler einen Befehl *überhaupt* benutzen darf | Was ein Spieler *innerhalb seines Clans* darf |
-| **Wo vergeben?** | In LuckPerms | Im Spiel über `/clan settings` → Ränge verwalten |
-| **Standard** | Jeder Spieler hat alle Rechte | Abhängig vom zugewiesenen Rang |
+| **PlaceholderAPI** | Stellt die `%clansystem_*%`-Platzhalter bereit | Platzhalter funktionieren nicht |
+| **LuckPerms** | Empfohlen für die Verwaltung der `clansystem.*`-Permissions | Permissions müssen über ein anderes Permission-Plugin oder `op` vergeben werden |
+| **ProtocolLib** | Wird für den Glow-Effekt (leuchtender Umriss für Clan-Mitglieder) benötigt | Der Glow-Effekt bleibt aus Sicherheitsgründen automatisch deaktiviert |
 
-> 👑 **Der Eigentümer** eines Clans (Ersteller bzw. aktueller Inhaber nach `/clan transfer`) hat **immer automatisch alle clan-internen Rechte** — egal welcher Rang ihm zugewiesen ist. Das lässt sich nicht über die Rang-Verwaltung verändern und hat nichts mit LuckPerms zu tun.
->
-> Er wird dafür überall im Spiel (Haupt-Menü, Mitgliederliste, Clan-Chat-Präfix, Placeholder `%clan_rank%`) rein optisch als **„Leader"** angezeigt — statt seines echten Rangnamens (z. B. „Admin"). Es gibt dafür **keinen echten Rang** namens „Leader".
+## Datenbank-Konfiguration
 
-Ein Spieler braucht für viele Aktionen **beides zusammen**: sowohl die LuckPerms-Node (z. B. `clansystem.kick`) als auch das passende Rang-Recht (z. B. `KICK`).
+Das Plugin unterstützt zwei Speicher-Typen, umschaltbar in der `config.yml` unter `database.type`:
 
----
+```yaml
+database:
+  type: "sqlite"        # "sqlite" oder "mariadb"
+  file: "clans.db"      # nur bei type: "sqlite"
+  table-prefix: "clan_"
+  mariadb:
+    host: "localhost"
+    port: 3306
+    database: "clansystem"
+    username: "root"
+    password: ""
+    use-ssl: false
+    pool-size: 6
+```
 
-## 🎮 Spieler-Befehle
-
-Alle `/clan`-Befehle (Alias `/c`) benötigen als Grundvoraussetzung die Node `clansystem.use`.
-
-### Clan-Verwaltung
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan` | Öffnet das Haupt-Menü (oder die Hilfe, falls in keinem Clan) | `clansystem.use` | – |
-| `/clan create <name>` | Erstellt einen neuen Clan, man wird automatisch Eigentümer | `clansystem.create` | – |
-| `/clan disband` | Löst den eigenen Clan komplett auf (mit Bestätigung) | – *(nur Eigentümer)* | – |
-| `/clan leave` | Verlässt den eigenen Clan | `clansystem.leave` | – |
-| `/clan transfer <spieler>` | Überträgt die Eigentümerschaft endgültig (auch per GUI) | – *(nur Eigentümer)* | – |
-
-> ⏳ Für `/clan create` gilt ein Cooldown nach dem letzten Verlassen eines Clans — umgehbar mit `clansystem.bypass.cooldown`.
-> 🚪 Der Eigentümer kann `/clan leave` nicht direkt nutzen — er muss vorher per `/clan transfer` übergeben.
-
-### Mitglieder & Ränge
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan invite <spieler>` | Lädt einen Spieler ein (nur bei Beitrittsart „Einladung") | `clansystem.invite` | `INVITE` |
-| `/clan accept` | Nimmt eine erhaltene Einladung an | `clansystem.join` | – |
-| `/clan apply <clanname>` | Bewirbt sich bei einem Clan (nur bei „Bewerbung") | `clansystem.join` | – |
-| `/clan join <clanname>` | Tritt einem offenen Clan sofort bei (nur bei „Offen") | `clansystem.join` | – |
-| `/clan kick <spieler>` | Entfernt ein Mitglied aus dem Clan | `clansystem.kick` | `KICK` |
-| `/clan promote <spieler>` | Befördert ein Mitglied einen Rang höher | – | `PROMOTE` |
-| `/clan demote <spieler>` | Degradiert ein Mitglied einen Rang tiefer | – | `DEMOTE` |
-| `/clan rank set <spieler> <rang>` | Weist direkt einen bestimmten Rang zu | `clansystem.rank` | `PROMOTE` oder `DEMOTE` |
-| `/clan rank create <name>` | Erstellt einen neuen Rang (auch per GUI) | `clansystem.rank` | `RANK_MANAGE` |
-| `/clan rank delete <name>` | Löscht einen Rang | `clansystem.rank` | `RANK_MANAGE` |
-| `/clan rank rename <alt> <neu>` | Benennt einen Rang um (auch per GUI) | `clansystem.rank` | `RANK_MANAGE` |
-
-### 🏠 Homes
-
-> ℹ️ **Es gibt pro Clan immer nur EIN Home** — unabhängig vom Clan-Level. Ist bereits eines gesetzt, muss es erst mit `/clan delhome` gelöscht werden, bevor ein neues (ggf. mit anderem Namen) gesetzt werden kann.
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan sethome <name>` | Setzt das Clan-Home an der aktuellen Position (auch per GUI) | `clansystem.home` | `SET_HOME` |
-| `/clan home <name>` | Teleportiert zum Clan-Home (Warmup & Cooldown) | `clansystem.home` | – |
-| `/clan delhome <name>` | Löscht das Clan-Home | `clansystem.home` | `DEL_HOME` |
-| `/clan homes` | Öffnet die Home-Übersicht | `clansystem.home` | – |
-
-> ⏱️ Warmup/Cooldown bei `/clan home` sind umgehbar mit `clansystem.bypass.warmup` bzw. `clansystem.bypass.cooldown`.
-
-### 🌀 Warps
-
-> ℹ️ Die Anzahl möglicher Warps **hängt vom Clan-Level ab** (im Gegensatz zu Homes).
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan setwarp <name>` | Setzt einen Clan-Warp (auch per GUI) | `clansystem.warp` | `SET_WARP` |
-| `/clan warp <name>` | Teleportiert zu einem Clan- oder freigegebenen Allianz-Warp | `clansystem.warp` | – |
-| `/clan delwarp <name>` | Löscht einen Clan-Warp | `clansystem.warp` | `DEL_WARP` |
-| `/clan warps` | Öffnet die Warp-Übersicht | `clansystem.warp` | – |
-
-### 📦 Truhe
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan chest` | Öffnet die Clan-Truhe | `clansystem.chest` | `CHEST_ACCESS` zum Öffnen, `CHEST_WITHDRAW` zum Entnehmen |
-
-### 🤝 Diplomatie
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan ally invite <clanname>` | Sendet eine Allianz-Anfrage (auch per GUI) | `clansystem.ally` | `ALLY_MANAGE` |
-| `/clan ally accept <clanname>` | Nimmt eine Allianz-Anfrage an | `clansystem.ally` | `ALLY_MANAGE` |
-| `/clan ally remove <clanname>` | Löst eine bestehende Allianz auf | `clansystem.ally` | `ALLY_MANAGE` |
-| `/clan war declare <clanname>` | Erklärt einem anderen Clan den Krieg | `clansystem.war` | `WAR_MANAGE` |
-| `/clan war surrender <clanname>` | Kapituliert in einem laufenden Krieg (ohne Namen → Kriegs-Menü) | `clansystem.war` | `WAR_MANAGE` |
-| `/clan wars <clanname>` | Zeigt die Kriegs-Historie eines Clans | `clansystem.info` | – |
-
-### ⚙️ Einstellungen & Sonstiges
-
-| Befehl | Beschreibung | Node | Rang-Recht |
-|---|---|---|---|
-| `/clan settings` | Öffnet das Einstellungs-Menü | `clansystem.settings` | `SETTINGS` oder `RANK_MANAGE` |
-| `/clan suffix <text>` | Setzt den Clan-Suffix per Chat | `clansystem.settings` | `SET_SUFFIX` |
-| `/clan list` *(Alias `/clan top`)* | Öffnet die Clan-Rangliste (Level, Punkte, Mitglieder) | `clansystem.list` | – |
-| `/clan info <clanname>` | Zeigt Clan-Infos (ohne Namen: eigener Clan) | `clansystem.info` | – |
-| `/clan chat <nachricht>` *(Alias `/clan c`)* | Ohne Text: Clan-Chat-Modus umschalten, mit Text: Nachricht senden | `clansystem.chat` | – |
-| `/clan ac <nachricht>` | Wie `/clan chat`, aber für den Allianz-Chat | `clansystem.chat` | – |
-| `/clan help` *(Alias `/clan ?`)* | Zeigt die Befehlsübersicht | `clansystem.use` | – |
-
-Im Einstellungs-Menü erreichbar: **Beitrittsart, Suffix, Icon, Ränge verwalten, Glow-Effekt, Clan auflösen.**
-
-Beim Suffix lassen sich Farbe und Formatierung nur über das GUI einstellen (Einstellungen → Clan-Suffix); der Chat-Befehl setzt nur den reinen Text.
-
-#### ✨ Glow-Effekt
-
-Lässt alle **Online-Mitglieder** des Clans durch Wände hindurch leuchten (weißer Umriss).
-
-- 🔒 **Ausschließlich für Mitglieder des eigenen Clans sichtbar** — niemals für Fremde oder gegnerische Clans.
-- 🏷️ Der Spielername (über dem Kopf / in der Tab-Liste) bleibt **immer normal** — es gibt keine Farbauswahl.
-- ⚠️ **Voraussetzung:** Auf dem Server muss zusätzlich [**ProtocolLib**](https://www.spigotmc.org/resources/protocollib.1997/) installiert sein (Soft-Dependency). Ohne ProtocolLib bleibt der Effekt **aus Sicherheitsgründen komplett deaktiviert** und lässt sich in der GUI nicht aktivieren — sonst wäre er serverweit für jeden sichtbar.
+- **`sqlite`** (Standard): Speichert alle Daten in einer lokalen `.db`-Datei direkt im Plugin-Ordner (`plugins/Clansystem/clans.db`). Keine externe Datenbank nötig, ideal für kleinere Server.
+- **`mariadb`**: Verbindet sich mit einem externen MariaDB/MySQL-Server über den Connection-Pool. Empfohlen für Netzwerke mit mehreren Servern, die sich eine Clan-Datenbank teilen.
+- **`table-prefix`** gilt für beide Speicher-Typen und verhindert Namenskonflikte, falls die Datenbank/Datei von mehreren Plugins genutzt wird.
 
 ---
 
-## 🛡️ Admin-Befehle
+## Befehle
 
-Alle `/clanadmin`-Befehle benötigen als Grundvoraussetzung die Node `clansystem.admin`.
+### `/clan` (Hauptbefehl)
 
-| Befehl | Beschreibung | Node |
+Basis-Permission: **`clansystem.use`**
+
+| Befehl | Beschreibung | Permission |
 |---|---|---|
-| `/clanadmin reload` | Lädt `config.yml`, `messages.yml` und `level.yml` neu | `clansystem.admin.reload` |
-| `/clanadmin delete <clanname>` | Löst einen beliebigen Clan zwangsweise auf | `clansystem.admin.delete` |
+| `/clan create <name>` | Erstellt einen neuen Clan | `clansystem.create` |
+| `/clan disband` | Löst den eigenen Clan auf (nur Owner) | `clansystem.use` |
+| `/clan leave` | Verlässt den aktuellen Clan | `clansystem.leave` |
+| `/clan kick <spieler>` | Kickt ein Mitglied aus dem Clan | `clansystem.kick` + Rang-Recht `KICK` |
+| `/clan invite <spieler>` | Lädt einen Spieler in den Clan ein | `clansystem.invite` + Rang-Recht `INVITE` |
+| `/clan accept` | Nimmt eine Clan-Einladung an | `clansystem.use` |
+| `/clan apply <clanname>` | Bewirbt sich bei einem Clan (Beitrittsart `APPLY`) | `clansystem.join` |
+| `/clan join <clanname>` | Tritt einem offenen Clan bei (Beitrittsart `OPEN`) | `clansystem.join` |
+| `/clan sethome <name>` | Setzt ein Clan-Home an der aktuellen Position | `clansystem.home` + Rang-Recht `SET_HOME` |
+| `/clan home <name>` | Teleportiert zu einem Clan-Home | `clansystem.home` |
+| `/clan delhome <name>` | Löscht ein Clan-Home | `clansystem.home` + Rang-Recht `DEL_HOME` |
+| `/clan homes` | Zeigt alle Clan-Homes in einem GUI | `clansystem.home` |
+| `/clan setwarp <name>` | Setzt einen Clan-Warp | `clansystem.warp` + Rang-Recht `SET_WARP` |
+| `/clan warp <name>` | Teleportiert zu einem Clan- oder Allianz-Warp | `clansystem.warp` |
+| `/clan delwarp <name>` | Löscht einen Clan-Warp | `clansystem.warp` + Rang-Recht `DEL_WARP` |
+| `/clan warps` | Zeigt alle Clan-Warps in einem GUI | `clansystem.warp` |
+| `/clan chest` | Öffnet die Clan-Truhe | `clansystem.chest` + Rang-Recht `CHEST_ACCESS` |
+| `/clan ally invite <clanname>` | Schlägt einem anderen Clan eine Allianz vor | `clansystem.ally` + Rang-Recht `ALLY_MANAGE` |
+| `/clan ally accept <clanname>` | Nimmt einen Allianz-Vorschlag an | `clansystem.ally` + Rang-Recht `ALLY_MANAGE` |
+| `/clan ally remove <clanname>` | Beendet eine bestehende Allianz | `clansystem.ally` + Rang-Recht `ALLY_MANAGE` |
+| `/clan war declare <clanname>` | Erklärt einem Clan den Krieg | `clansystem.war` + Rang-Recht `WAR_MANAGE` |
+| `/clan war surrender <clanname>` | Kapituliert in einem laufenden Krieg | `clansystem.war` + Rang-Recht `WAR_MANAGE` |
+| `/clan rank set <spieler> <rang>` | Weist einem Mitglied einen Rang zu | `clansystem.rank` + Rang-Recht `PROMOTE`/`DEMOTE` |
+| `/clan rank create <name>` | Erstellt einen neuen Rang | `clansystem.rank` + Rang-Recht `RANK_MANAGE` |
+| `/clan rank delete <name>` | Löscht einen Rang | `clansystem.rank` + Rang-Recht `RANK_MANAGE` |
+| `/clan rank rename <alter-name> <neuer-name>` | Benennt einen Rang um | `clansystem.rank` + Rang-Recht `RANK_MANAGE` |
+| `/clan settings` | Öffnet die Clan-Einstellungen (Icon, Farbe, Glow, Suffix, Beitrittsart) | `clansystem.settings` |
+| `/clan list` / `/clan top` | Zeigt die Clan-Rangliste (nach Punkten) | `clansystem.list` |
+| `/clan info [clanname]` | Zeigt Informationen zu einem Clan (ohne Argument: eigener Clan) | `clansystem.info` |
+| `/clan chat <nachricht>` bzw. `/clan c` | Sendet eine Nachricht in den Clan-Chat, ohne Argument: schaltet den Clan-Chat-Modus um | `clansystem.chat` |
+| `/clan ac <nachricht>` | Sendet eine Nachricht in den Allianz-Chat, ohne Argument: schaltet den Allianz-Chat-Modus um | `clansystem.chat` |
+| `/clan suffix <suffix>` | Setzt das Clan-Kürzel/Tag | Rang-Recht `SET_SUFFIX` |
+| `/clan promote <spieler>` | Befördert ein Mitglied zum nächsthöheren Rang | Rang-Recht `PROMOTE` |
+| `/clan demote <spieler>` | Degradiert ein Mitglied zum nächstniedrigeren Rang | Rang-Recht `DEMOTE` |
+| `/clan transfer <spieler>` | Überträgt die Clan-Eigentümerschaft an ein anderes Mitglied | nur Owner |
+| `/clan help` bzw. `/clan ?` | Zeigt die Befehlsübersicht | `clansystem.use` |
+
+> Beitrittsarten: Ein Clan kann `OPEN` (jeder kann per `/clan join` beitreten), `INVITE` (nur per Einladung) oder `APPLY` (Bewerbung, muss von einem berechtigten Mitglied angenommen werden) sein. Einstellbar über `/clan settings` bzw. Standardwert in der `config.yml` (`clan.default-join-type`).
+
+### `/clanadmin` (Admin-Befehl)
+
+Basis-Permission: **`clansystem.admin`**
+
+| Befehl | Beschreibung | Permission |
+|---|---|---|
+| `/clanadmin reload` | Lädt `config.yml`, `level.yml` und `messages.yml` neu | `clansystem.admin.reload` |
+| `/clanadmin delete <clanname>` | Löscht einen Clan endgültig | `clansystem.admin.delete` |
 | `/clanadmin setlevel <clanname> <level>` | Setzt das Level eines Clans direkt | `clansystem.admin.setlevel` |
-| `/clanadmin setleader <clanname> <spieler>` | Setzt den Eigentümer eines Clans zwangsweise neu | `clansystem.admin.setleader` |
-| `/clanadmin chest <clanname>` | Öffnet die Truhe eines fremden Clans zur Einsicht | `clansystem.admin.chest` |
-| `/clanadmin addpoints <clanname> <punkte>` | Fügt einem Clan manuell Punkte hinzu | `clansystem.admin.addpoints` |
-| `/clanadmin info <clanname>` | Zeigt ausführliche Admin-Infos zu einem Clan | nur `clansystem.admin` |
-| `/clanadmin forcejoin <spieler> <clanname>` | Zwingt einen Spieler in einen Clan (umgeht Einladung) | `clansystem.admin.bypass` |
+| `/clanadmin setleader <clanname> <spieler>` | Setzt einen neuen Clan-Owner | `clansystem.admin.setleader` |
+| `/clanadmin chest <clanname>` | Öffnet die Truhe eines fremden Clans | `clansystem.admin.chest` |
+| `/clanadmin addpoints <clanname> <punkte>` | Fügt einem Clan Punkte hinzu (kann Level-Aufstiege auslösen) | `clansystem.admin.addpoints` |
+| `/clanadmin info <clanname>` | Zeigt detaillierte Admin-Infos zu einem Clan | `clansystem.admin` |
+| `/clanadmin forcejoin <spieler> <clanname>` | Fügt einen Spieler zwangsweise einem Clan hinzu | `clansystem.admin.bypass` |
 | `/clanadmin forceleave <spieler>` | Entfernt einen Spieler zwangsweise aus seinem Clan | `clansystem.admin.bypass` |
-| `/clanadmin list` | Listet alle Clans des Servers auf | nur `clansystem.admin` |
-| `/clanadmin help` | Zeigt die Admin-Befehlsübersicht | `clansystem.admin` |
+| `/clanadmin list` | Listet alle existierenden Clans auf | `clansystem.admin` |
+| `/clanadmin help` bzw. `/clanadmin ?` | Zeigt die Admin-Befehlsübersicht | `clansystem.admin` |
 
 ---
 
-## 🔑 Alle LuckPerms-Nodes im Überblick
+## Permissions
 
-### Spieler-Nodes (Standard: `true`, jeder hat sie)
+Alle Permissions sind in der `plugin.yml` registriert. Standard-Vergabe steht jeweils in Klammern.
 
-| Node | Zweck |
-|---|---|
-| `clansystem.use` | Grundzugriff auf `/clan` |
-| `clansystem.create` | Clan erstellen |
-| `clansystem.join` | Clan beitreten, annehmen, bewerben |
-| `clansystem.leave` | Clan verlassen |
-| `clansystem.chat` | Clan- und Allianz-Chat nutzen |
-| `clansystem.home` | Clan-Home nutzen und verwalten |
-| `clansystem.warp` | Clan-Warps nutzen und verwalten |
-| `clansystem.chest` | Clan-Truhe öffnen |
-| `clansystem.list` | Clan-Rangliste anzeigen |
-| `clansystem.info` | Clan-Infos und Kriegshistorie anzeigen |
-| `clansystem.invite` | Spieler einladen |
-| `clansystem.kick` | Spieler kicken |
-| `clansystem.ally` | Allianzen verwalten |
-| `clansystem.war` | Kriege verwalten |
-| `clansystem.settings` | Clan-Einstellungen öffnen |
-| `clansystem.rank` | Ränge verwalten per Befehl |
+### Allgemeine Nutzung
 
-### Bypass- & Admin-Nodes (Standard: nur OP)
+| Permission | Beschreibung | Standard |
+|---|---|---|
+| `clansystem.use` | Grundzugriff auf alle `/clan`-Befehle | `true` |
+| `clansystem.create` | Erlaubt das Erstellen eines Clans | `true` |
+| `clansystem.join` | Erlaubt das Beitreten/Bewerben bei einem Clan | `true` |
+| `clansystem.leave` | Erlaubt das Verlassen eines Clans | `true` |
+| `clansystem.chat` | Erlaubt die Nutzung von Clan- und Allianz-Chat | `true` |
+| `clansystem.home` | Erlaubt die Nutzung von Clan-Homes | `true` |
+| `clansystem.warp` | Erlaubt die Nutzung von Clan-Warps | `true` |
+| `clansystem.chest` | Erlaubt den Zugriff auf die Clan-Truhe | `true` |
+| `clansystem.list` | Erlaubt das Anzeigen der Clan-Rangliste | `true` |
+| `clansystem.info` | Erlaubt das Anzeigen von Clan-Infos | `true` |
+| `clansystem.invite` | Erlaubt das Einladen von Spielern | `true` |
+| `clansystem.kick` | Erlaubt das Kicken von Spielern | `true` |
+| `clansystem.ally` | Erlaubt die Verwaltung von Allianzen | `true` |
+| `clansystem.war` | Erlaubt die Verwaltung von Kriegen | `true` |
+| `clansystem.settings` | Erlaubt die Verwaltung von Clan-Einstellungen | `true` |
+| `clansystem.rank` | Erlaubt die Verwaltung von Rängen | `true` |
 
-| Node | Zweck |
-|---|---|
-| `clansystem.bypass.cooldown` | Ignoriert alle Cooldowns |
-| `clansystem.bypass.warmup` | Ignoriert alle Teleport-Warmups |
-| `clansystem.admin` | Voller Zugriff auf `/clanadmin` |
-| `clansystem.admin.reload` | Config neu laden |
-| `clansystem.admin.delete` | Fremde Clans löschen |
-| `clansystem.admin.setlevel` | Clan-Level setzen |
-| `clansystem.admin.setleader` | Clan-Eigentümer setzen |
-| `clansystem.admin.chest` | Fremde Clan-Truhen öffnen |
-| `clansystem.admin.addpoints` | Clan-Punkte hinzufügen |
-| `clansystem.admin.bypass` | `forcejoin` und `forceleave` nutzen |
+### Bypass-Permissions
 
-> 💡 Diese Nodes steuern **nur**, ob ein Spieler einen Befehl überhaupt ausführen darf — sie ersetzen **nicht** das clan-interne Rang-System. Für `/clan kick` braucht ein Spieler z. B. sowohl `clansystem.kick` **als auch** das Rang-Recht `KICK`.
+| Permission | Beschreibung | Standard |
+|---|---|---|
+| `clansystem.bypass.cooldown` | Ignoriert alle Cooldowns (z.B. Beitritts-Cooldown, Teleport-Cooldown) | `op` |
+| `clansystem.bypass.warmup` | Ignoriert alle Teleport-Warmups | `op` |
 
----
+### Admin-Permissions
 
-## 🏅 Clan-interne Rang-Berechtigungen
+| Permission | Beschreibung | Standard |
+|---|---|---|
+| `clansystem.admin` | Voller Admin-Zugriff auf das Clan-System (Elternknoten) | `op` |
+| `clansystem.admin.reload` | Erlaubt das Neuladen der Konfiguration | `op` |
+| `clansystem.admin.delete` | Erlaubt das Löschen von Clans | `op` |
+| `clansystem.admin.setlevel` | Erlaubt das Setzen von Clan-Leveln | `op` |
+| `clansystem.admin.setleader` | Erlaubt das Setzen von Clan-Ownern | `op` |
+| `clansystem.admin.chest` | Erlaubt den Zugriff auf fremde Clan-Truhen | `op` |
+| `clansystem.admin.addpoints` | Erlaubt das Hinzufügen von Clan-Punkten | `op` |
+| `clansystem.admin.bypass` | Umgeht alle Einschränkungen (u.a. `forcejoin`/`forceleave`) | `op` |
 
-Diese werden **nicht** über LuckPerms vergeben, sondern pro Clan individuell im Spiel unter `/clan settings` → Ränge verwalten.
+> `clansystem.admin` ist der Elternknoten aller `clansystem.admin.*`-Rechte – wer `clansystem.admin` besitzt, erhält automatisch auch alle Kind-Permissions.
 
-| Recht | Bedeutung |
+## Interne Rang-Berechtigungen
+
+Zusätzlich zu den Bukkit-Permissions oben gibt es **clan-interne Ränge** mit eigenen Rechten, die pro Clan über `/clan rank` verwaltet werden (unabhängig vom Server-Permission-System). Der Clan-Owner besitzt **immer alle** dieser Rechte, unabhängig vom zugewiesenen Rang:
+
+| Rang-Recht | Beschreibung |
 |---|---|
 | `INVITE` | Mitglieder einladen |
 | `KICK` | Mitglieder kicken |
 | `PROMOTE` | Mitglieder befördern |
 | `DEMOTE` | Mitglieder degradieren |
-| `SET_HOME` | Clan-Home setzen |
-| `DEL_HOME` | Clan-Home löschen |
-| `SET_WARP` | Clan-Warps setzen |
-| `DEL_WARP` | Clan-Warps löschen |
-| `CHEST_ACCESS` | Zugriff auf die Clan-Truhe (öffnen & einlagern) |
-| `CHEST_WITHDRAW` | Items aus der Clan-Truhe entnehmen |
-| `ALLY_MANAGE` | Allianzen einladen, annehmen und auflösen |
-| `WAR_MANAGE` | Kriege erklären und kapitulieren |
-| `SETTINGS` | Clan-Einstellungen öffnen und bearbeiten |
-| `RANK_MANAGE` | Ränge erstellen, löschen, umbenennen, Rechte anpassen |
-| `SET_SUFFIX` | Clan-Suffix bearbeiten (Text, Farbe, Formatierung) |
-| `DISBAND` | Clan auflösen — **in der Praxis nur der echte Eigentümer**, egal welcher Rang das Recht zugewiesen hat |
+| `SET_HOME` | Homes setzen |
+| `DEL_HOME` | Homes löschen |
+| `SET_WARP` | Warps setzen |
+| `DEL_WARP` | Warps löschen |
+| `CHEST_ACCESS` | Zugriff auf die Clan-Truhe |
+| `CHEST_WITHDRAW` | Aus der Clan-Truhe entnehmen |
+| `ALLY_MANAGE` | Allianzen verwalten |
+| `WAR_MANAGE` | Kriege verwalten |
+| `SETTINGS` | Clan-Einstellungen ändern |
+| `RANK_MANAGE` | Ränge verwalten |
+| `SET_SUFFIX` | Clan-Suffix ändern |
+| `DISBAND` | Clan auflösen |
 
-### Standard-Ränge eines neuen Clans
+Die Standard-Ränge für neu erstellte Clans (`Admin` und `Mitglied`) sowie deren Rechte lassen sich in der `config.yml` unter `default-ranks` anpassen (siehe unten).
 
-*(änderbar in `config.yml` unter `default-ranks`)*
+---
 
-| Rang | Priorität | Rechte |
+## PlaceholderAPI-Platzhalter
+
+Voraussetzung: PlaceholderAPI ist installiert. Identifier: **`clansystem`**
+
+| Platzhalter | Beschreibung | Beispiel |
 |---|---|---|
-| **Admin** | 100 | Alle Rechte außer `DISBAND` |
-| **Mitglied** | 10 | Nur `CHEST_ACCESS` |
+| `%clansystem_clan_name%` | Name des Clans des Spielers (leer, falls in keinem Clan) | `Ravenclan` |
+| `%clansystem_clan_suffix%` | Eingefärbtes Clan-Suffix/-Tag | `§b[RVC]` |
+| `%clansystem_clan_level%` | Aktuelles Level des Clans | `4` |
+| `%clansystem_clan_points%` | Aktuelle Punktzahl des Clans | `1250` |
+| `%clansystem_clan_rank%` | Angezeigter Rangname des Spielers im Clan | `Admin` |
+| `%clansystem_clan_membercount%` | Aktuelle Mitgliederzahl des Clans | `12` |
+| `%clansystem_clan_maxmembers%` | Maximale Mitgliederzahl (abhängig vom Level) | `20` |
 
-> 👑 **„Leader" ist bewusst kein eigener Rang.** Der Ersteller bzw. aktuelle Eigentümer hat automatisch alle Rechte inklusive `DISBAND` — unabhängig davon, welchen Rang er zugewiesen hat. Er wird aber überall im Spiel (Haupt-Menü, Mitgliederliste, Clan-Chat-Präfix, Placeholder `%clan_rank%`) rein optisch als **„Leader"** angezeigt statt mit seinem echten Rangnamen. Das ist reine Anzeige-Logik, kein echter Rang.
+Ist der Spieler in keinem Clan, liefern alle Platzhalter einen leeren String bzw. `"0"` (bei Zahlenwerten).
+
+---
+
+## Konfigurationsdateien
+
+### `config.yml`
+
+| Sektion | Beschreibung |
+|---|---|
+| `database` | Speicher-Typ (`sqlite`/`mariadb`), Dateiname, Tabellen-Prefix, MariaDB-Zugangsdaten (siehe [Datenbank-Konfiguration](#datenbank-konfiguration)) |
+| `clan.name` | Mindest-/Maximallänge sowie erlaubte Zeichen (Regex) für Clan-Namen |
+| `clan.leave-cooldown` | Cooldown in Sekunden nach Verlassen eines Clans, bevor ein neuer erstellt/beigetreten werden kann |
+| `clan.default-join-type` | Standard-Beitrittsart neuer Clans: `OPEN`, `INVITE` oder `APPLY` |
+| `suffix` | Maximallänge, erlaubte Formatierungen und verbotene Wörter für Clan-Suffixe |
+| `teleport` | Warmup/Cooldown für Homes & Warps, Abbruch bei Bewegung/Schaden |
+| `pvp` | Punktevergabe für Kriegs-/normale Kills, Friendly-Fire-Einstellungen |
+| `broadcasts` | Welche Ereignisse serverweit angekündigt werden (Clan erstellt/aufgelöst, Mitglied beigetreten/verlassen) |
+| `default-ranks` | Standard-Ränge samt Priorität und Rechten für neu erstellte Clans |
+| `chest-logging` | Aktiviert/deaktiviert das Logging der Clan-Truhen-Interaktionen |
+
+### `level.yml`
+
+Definiert das Levelsystem der Clans:
+
+- **`base-values`**: Startwerte eines neuen Clans (`max-members`, `max-warps`, `chest-rows`, `icon`). `max-homes` wird ignoriert – jeder Clan hat immer genau **1** Home, unabhängig vom Level.
+- **`levels`**: Pro Level `points-required` (benötigte Gesamtpunktzahl) sowie `rewards` (**additive** Boni zu den Basiswerten: `max-members`, `max-warps`, `chest-rows`, optional `icon` für ein neu freigeschaltetes Clan-Icon).
+
+### `messages.yml`
+
+Enthält sämtliche Spieler-Nachrichten des Plugins (Chat-Format, Fehlermeldungen, GUI-Texte, Broadcasts usw.) und kann frei angepasst/übersetzt werden. Unterstützt Farbcodes (`&`) und Platzhalter wie `{clan}`, `{spieler}`, `{usage}` je nach Nachricht.
+
+---
+
+## Features im Detail
+
+- **Levelsystem**: Clans sammeln Punkte (z.B. durch PvP-Kills) und steigen dadurch automatisch im Level auf, wodurch mehr Mitglieder, Warps, Truhenplatz und neue Clan-Icons freigeschaltet werden.
+- **Homes & Warps**: Jeder Clan hat genau ein Home; Warps sind in der Anzahl vom Level abhängig und können optional für Allianzen sichtbar gemacht werden.
+- **Clan-Truhe**: Ein gemeinsames, geteiltes Inventar pro Clan mit optionalem Logging aller Einlagerungen/Entnahmen.
+- **Allianzen**: Zwei Clans können sich verbünden, wodurch z. B. Allianz-Chat, gemeinsame Warp-Sichtbarkeit und deaktiviertes Friendly Fire möglich werden.
+- **Kriege**: Clans können sich gegenseitig den Krieg erklären; Kills im Krieg geben mehr Punkte als reguläre Kills.
+- **Rangsystem**: Frei konfigurierbare Ränge pro Clan mit granularen Rechten (siehe [Interne Rang-Berechtigungen](#interne-rang-berechtigungen)); der Clan-Owner hat immer alle Rechte.
+- **Glow-Effekt**: Optionaler, immer weißer Leucht-Umriss für Clan-Mitglieder (nur mit ProtocolLib), ohne dass Spielernamen farblich verändert werden.
+- **GUIs**: Vollständig menügesteuerte Bedienung für Clan-Übersicht, Mitgliederliste, Homes/Warps, Allianzen, Ränge, Einstellungen, Icon-/Farbauswahl u. v. m.
