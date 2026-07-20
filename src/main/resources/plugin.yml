@@ -1,0 +1,97 @@
+name: Clansystem
+version: '1.0'
+main: de.Z7534.clansystem.Clansystem
+api-version: '1.21'
+authors: [Z7534]
+description: Clan System
+softdepend: [PlaceholderAPI, LuckPerms, ProtocolLib]
+
+commands:
+  clan:
+    description: Hauptbefehl für das Clan-System
+    usage: /<command> [subcommand]
+  clanadmin:
+    description: Admin-Befehle für das Clan-System
+    usage: /<command> [subcommand]
+    permission: clansystem.admin
+
+permissions:
+  clansystem.use:
+    description: Grundzugriff auf alle /clan-Befehle
+    default: true
+  clansystem.create:
+    description: Erlaubt das Erstellen eines Clans
+    default: true
+  clansystem.join:
+    description: Erlaubt das Beitreten eines Clans
+    default: true
+  clansystem.leave:
+    description: Erlaubt das Verlassen eines Clans
+    default: true
+  clansystem.chat:
+    description: Erlaubt die Nutzung des Clan-Chats
+    default: true
+  clansystem.home:
+    description: Erlaubt die Nutzung von Clan-Homes
+    default: true
+  clansystem.warp:
+    description: Erlaubt die Nutzung von Clan-Warps
+    default: true
+  clansystem.chest:
+    description: Erlaubt den Zugriff auf die Clan-Truhe
+    default: true
+  clansystem.list:
+    description: Erlaubt das Anzeigen der Clan-Liste
+    default: true
+  clansystem.info:
+    description: Erlaubt das Anzeigen von Clan-Infos
+    default: true
+  clansystem.invite:
+    description: Erlaubt das Einladen von Spielern
+    default: true
+  clansystem.kick:
+    description: Erlaubt das Kicken von Spielern
+    default: true
+  clansystem.ally:
+    description: Erlaubt die Verwaltung von Allianzen
+    default: true
+  clansystem.war:
+    description: Erlaubt die Verwaltung von Kriegen
+    default: true
+  clansystem.settings:
+    description: Erlaubt die Verwaltung von Clan-Einstellungen
+    default: true
+  clansystem.rank:
+    description: Erlaubt die Verwaltung von Rängen
+    default: true
+  clansystem.bypass.cooldown:
+    description: Ignoriert alle Cooldowns
+    default: op
+  clansystem.bypass.warmup:
+    description: Ignoriert alle Warmups
+    default: op
+  clansystem.admin:
+    description: Voller Admin-Zugriff auf das Clan-System
+    default: op
+    children:
+      clansystem.admin.reload:
+        description: Erlaubt das Neuladen der Konfiguration
+        default: op
+      clansystem.admin.delete:
+        description: Erlaubt das Löschen von Clans
+        default: op
+      clansystem.admin.setlevel:
+        description: Erlaubt das Setzen von Clan-Leveln
+        default: op
+      clansystem.admin.setleader:
+        description: Erlaubt das Setzen von Clan-Leadern
+        default: op
+      clansystem.admin.chest:
+        description: Erlaubt den Zugriff auf fremde Clan-Truhen
+        default: op
+      clansystem.admin.addpoints:
+        description: Erlaubt das Hinzufügen von Clan-Punkten
+        default: op
+      clansystem.admin.bypass:
+        description: Umgeht alle Einschränkungen
+        default: op

@@ -1,0 +1,164 @@
+[08:38:57] [ServerMain/INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.11+10-LTS; Eclipse Adoptium Temurin-21.0.11+10) on Windows 11 10.0 (amd64)
+[08:38:57] [ServerMain/INFO]: [bootstrap] Loading Paper 1.21.10-130-ver/1.21.10@8043efd (2026-01-04T21:00:59Z) for Minecraft 1.21.10
+[08:38:58] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[08:38:59] [Paper Plugin Remapper Thread - 1/INFO]: [PluginRemapper] Remapping plugin 'C:\Users\ROG\IdeaProjects\Clansystem\build\libs\Clansystem-1.0.jar'...
+[08:39:02] [Paper Plugin Remapper Thread - 1/INFO]: [PluginRemapper] Done remapping plugin 'C:\Users\ROG\IdeaProjects\Clansystem\build\libs\Clansystem-1.0.jar' in 3014ms.
+[08:39:02] [ServerMain/INFO]: [PluginInitializerManager] Initialized 3 plugins
+[08:39:02] [ServerMain/INFO]: [PluginInitializerManager] Bukkit plugins (3):
+ - Clansystem (1.0), LuckPerms (5.5.59), ProtocolLib (5.4.0)
+[08:39:06] [ServerMain/WARN]: resource-pack-id missing, using default of 82efc86f-562a-3e9a-9682-2bf1401bf9e1
+[08:39:06] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[08:39:08] [ServerMain/INFO]: Loaded 1461 recipes
+[08:39:08] [ServerMain/INFO]: Loaded 1574 advancements
+[08:39:08] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Initialising converters for DataConverter...
+[08:39:08] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Finished initialising converters for DataConverter in 358,0ms
+[08:39:08] [ServerMain/WARN]: resource-pack-id missing, using default of 82efc86f-562a-3e9a-9682-2bf1401bf9e1
+[08:39:08] [Server thread/INFO]: Starting minecraft server version 1.21.10
+[08:39:08] [Server thread/INFO]: Loading properties
+[08:39:08] [Server thread/INFO]: This server is running Paper version 1.21.10-130-ver/1.21.10@8043efd (2026-01-04T21:00:59Z) (Implementing API version 1.21.10-R0.1-SNAPSHOT)
+[08:39:08] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[08:39:08] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[08:39:08] [Server thread/INFO]: Using 4 threads for Netty based IO
+[08:39:09] [Server thread/INFO]: [MoonriseCommon] Paper is using 8 worker threads, 1 I/O threads
+[08:39:10] [Server thread/INFO]: Default game type: SURVIVAL
+[08:39:10] [Server thread/INFO]: Generating keypair
+[08:39:10] [Server thread/INFO]: Starting Minecraft server on *:25565
+[08:39:10] [Server thread/INFO]: Using default channel type
+[08:39:10] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[08:39:10] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[08:39:10] [Server thread/INFO]: [ProtocolLib] Loading server plugin ProtocolLib v5.4.0
+[08:39:10] [Server thread/WARN]: [ProtocolLib] Version (MC: 1.21.10) has not yet been tested! Proceed with caution.
+[08:39:11] [Server thread/INFO]: [LuckPerms] Loading server plugin LuckPerms v5.5.59
+[08:39:11] [Server thread/INFO]: [LuckPerms] Loading configuration...
+[08:39:11] [Server thread/INFO]: [Clansystem] Loading server plugin Clansystem v1.0
+[08:39:11] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[08:39:11] [Server thread/INFO]: [ProtocolLib] Enabling ProtocolLib v5.4.0
+[08:39:11] [Server thread/INFO]: [LuckPerms] Enabling LuckPerms v5.5.59
+[08:39:11] [Server thread/INFO]:         __    
+[08:39:11] [Server thread/INFO]:   |    |__)   LuckPerms v5.5.59
+[08:39:11] [Server thread/INFO]:   |___ |      Running on Bukkit - Paper
+[08:39:11] [Server thread/INFO]: 
+[08:39:12] [Server thread/INFO]: [LuckPerms] Loading storage provider... [H2]
+[08:39:12] [Server thread/INFO]: [LuckPerms] Loading internal permission managers...
+[08:39:12] [Server thread/INFO]: [LuckPerms] Performing initial data load...
+[08:39:12] [Server thread/INFO]: [LuckPerms] Successfully enabled. (took 1132ms)
+[08:39:12] [Server thread/INFO]: Preparing level "world"
+[08:39:13] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:overworld'...
+[08:39:13] [Server thread/INFO]: Preparing spawn area: 100%
+[08:39:13] [Server thread/INFO]: Prepared spawn area in 3 ms
+[08:39:13] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_nether'...
+[08:39:13] [Server thread/INFO]: Prepared spawn area in 1 ms
+[08:39:13] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_end'...
+[08:39:13] [Server thread/INFO]: Prepared spawn area in 0 ms
+[08:39:13] [Server thread/INFO]: Done preparing level "world" (1.088s)
+[08:39:13] [Server thread/INFO]: [Clansystem] Enabling Clansystem v1.0
+[08:39:13] [Server thread/INFO]: [Clansystem] ========================================
+[08:39:13] [Server thread/INFO]: [Clansystem]   CLANSYSTEM v1.0
+[08:39:13] [Server thread/INFO]: [Clansystem]   Autor: Z7534
+[08:39:13] [Server thread/INFO]: [Clansystem] ========================================
+[08:39:13] [Server thread/INFO]: [de.Z7534.clansystem.libs.hikari.HikariDataSource] HikariPool-1 - Starting...
+[08:39:14] [Server thread/INFO]: [de.Z7534.clansystem.libs.hikari.pool.HikariPool] HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@26e9aef7
+[08:39:14] [Server thread/INFO]: [de.Z7534.clansystem.libs.hikari.HikariDataSource] HikariPool-1 - Start completed.
+[08:39:14] [Server thread/INFO]: [Clansystem] Datenbankverbindung hergestellt! (SQLITE)
+[08:39:14] [Server thread/INFO]: [Clansystem] Datenbanktabellen erstellt/überprüft.
+[08:39:14] [Server thread/INFO]: [Clansystem] ProtocolLib gefunden - Clan-Glow ist nur fuer das eigene Team sichtbar.
+[08:39:14] [Server thread/INFO]: [Clansystem] Loaded 0 clans from database.
+[08:39:14] [Server thread/INFO]: [Clansystem] Plugin erfolgreich aktiviert!
+[08:39:14] [Server thread/INFO]: [spark] Starting background profiler...
+[08:39:14] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
+[08:39:14] [Server thread/INFO]: Running delayed init tasks
+[08:39:14] [Server thread/INFO]: Done (17.357s)! For help, type "help"
+[08:39:26] [User Authenticator #0/INFO]: UUID of player Z7534 is 78f95e82-f8b2-4b11-9255-9c7c399bce94
+[08:39:27] [Server thread/INFO]: [HorriblePlayerLoginEventHack] You have plugins listening to the PlayerLoginEvent, this will cause re-configuration APIs to be unavailable: [LuckPerms, ProtocolLib]
+[08:39:30] [Server thread/INFO]: Z7534 joined the game
+[08:39:30] [Server thread/INFO]: Z7534[/127.0.0.1:59496] logged in with entity id 1 at ([world]188.82257453379117, 67.0, -32.0606720672647)
+[08:40:11] [Server thread/INFO]: Z7534 issued server command: /clan
+[08:40:20] [Server thread/INFO]: ClanSystem >> Der Clan Test wurde von Z7534 gegründet!
+[08:40:20] [Server thread/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[08:40:44] [User Authenticator #1/INFO]: UUID of player RikoSat0 is 56178dd5-a62d-45cf-92ae-1d4e467f2008
+[08:40:47] [Server thread/INFO]: RikoSat0 joined the game
+[08:40:47] [Server thread/INFO]: RikoSat0[/127.251.53.175:50580] logged in with entity id 268 at ([world]1.5, 63.0, -35.5)
+[08:41:11] [Server thread/INFO]: Set Z7534's game mode to Creative Mode
+[08:41:11] [Server thread/INFO]: Set RikoSat0's game mode to Creative Mode
+[08:41:16] [Server thread/INFO]: RikoSat0 issued server command: /clan
+[08:41:28] [Netty Server IO #3/WARN]: Failed to update secure chat state for RikoSat0: 'Chat disabled due to missing profile public key. Please try reconnecting.'
+[08:41:40] [Server thread/INFO]: RikoSat0 lost connection: Disconnected
+[08:41:40] [Server thread/INFO]: RikoSat0 left the game
+[08:42:06] [Async Chat Thread - #2/INFO]: <Z7534> Test
+[08:42:10] [Server thread/INFO]: Z7534 issued server command: /clan
+[08:42:14] [Server thread/INFO]: Z7534 issued server command: /clan
+[08:43:35] [User Authenticator #2/INFO]: UUID of player RikoSat0 is 56178dd5-a62d-45cf-92ae-1d4e467f2008
+[08:43:37] [Server thread/INFO]: RikoSat0 joined the game
+[08:43:37] [Server thread/INFO]: RikoSat0[/127.251.53.175:55970] logged in with entity id 691 at ([world]12.380129199555963, 63.0, -74.96892648818016)
+[08:46:04] [Server thread/INFO]: Stopping the server
+[08:46:04] [Server thread/INFO]: Stopping server
+[08:46:04] [Server thread/INFO]: [Clansystem] Disabling Clansystem v1.0
+[08:46:04] [Server thread/INFO]: [Clansystem] Saved 1 clans to database.
+[08:46:04] [Server thread/INFO]: [de.Z7534.clansystem.libs.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+[08:46:04] [ForkJoinPool.commonPool-worker-5/ERROR]: [Clansystem] Fehler beim Speichern der Truhe: HikariDataSource HikariDataSource (HikariPool-1) has been closed.
+[08:46:04] [ForkJoinPool.commonPool-worker-4/ERROR]: [Clansystem] Fehler beim Aktualisieren des Clans: HikariDataSource HikariDataSource (HikariPool-1) has been closed.
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: java.sql.SQLException: HikariDataSource HikariDataSource (HikariPool-1) has been closed.
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.libs.hikari.HikariDataSource.getConnection(HikariDataSource.java:95)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.managers.DatabaseManager.getConnection(DatabaseManager.java:72)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.managers.DatabaseManager.lambda$saveChest$13(DatabaseManager.java:740)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+[08:46:04] [ForkJoinPool.commonPool-worker-5/WARN]: 	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: java.sql.SQLException: HikariDataSource HikariDataSource (HikariPool-1) has been closed.
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.libs.hikari.HikariDataSource.getConnection(HikariDataSource.java:95)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.managers.DatabaseManager.getConnection(DatabaseManager.java:72)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at Clansystem-1.0-1784529539065.jar//de.Z7534.clansystem.managers.DatabaseManager.lambda$updateClan$1(DatabaseManager.java:286)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:387)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1312)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1843)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1808)
+[08:46:04] [ForkJoinPool.commonPool-worker-4/WARN]: 	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:188)
+[08:46:04] [Server thread/INFO]: [de.Z7534.clansystem.libs.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+[08:46:04] [Server thread/INFO]: [Clansystem] Datenbankverbindung geschlossen.
+[08:46:04] [Server thread/INFO]: [Clansystem] Plugin deaktiviert!
+[08:46:04] [Server thread/INFO]: [LuckPerms] Disabling LuckPerms v5.5.59
+[08:46:04] [Server thread/INFO]: [LuckPerms] Starting shutdown process...
+[08:46:04] [Server thread/INFO]: [LuckPerms] Closing storage...
+[08:46:04] [Server thread/INFO]: [LuckPerms] Goodbye!
+[08:46:04] [Server thread/INFO]: [ProtocolLib] Disabling ProtocolLib v5.4.0
+[08:46:04] [Server thread/INFO]: Saving players
+[08:46:04] [Server thread/INFO]: Z7534 lost connection: Server closed
+[08:46:04] [Server thread/INFO]: Z7534 left the game
+[08:46:04] [Server thread/INFO]: RikoSat0 lost connection: Server closed
+[08:46:04] [Server thread/INFO]: RikoSat0 left the game
+[08:46:04] [Server thread/INFO]: Saving worlds
+[08:46:04] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saved 477 block chunks, 229 entity chunks, 0 poi chunks in world 'world' in 0,29s
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world'
+[08:46:04] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_nether'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_nether'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_nether'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'world_nether' in 0,00s
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world_nether'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world_nether'
+[08:46:04] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_the_end'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_the_end'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_the_end'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'world_the_end' in 0,00s
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world_the_end'
+[08:46:04] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world_the_end'
+[08:46:04] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[08:46:04] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:46:04] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:46:04] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[08:46:04] [Server thread/INFO]: Waiting for all RegionFile I/O tasks to complete...
+[08:46:04] [Server thread/INFO]: All RegionFile I/O tasks to complete
+[08:46:04] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of worker pool for up to 60s...
+[08:46:04] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of I/O pool for up to 60s...
